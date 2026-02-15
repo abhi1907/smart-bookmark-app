@@ -19,11 +19,11 @@ export default function Home() {
     checkUser();
   }, [router]);
 
- const loginWithGoogle = async () => {
+const loginWithGoogle = async () => {
   await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: "http://localhost:3000/dashboard",
+      redirectTo: `${window.location.origin}/dashboard`,
     },
   });
 };
