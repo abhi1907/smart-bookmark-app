@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Bookmark App
 
-## Getting Started
+A full-stack bookmark manager built with Next.js (App Router), Supabase, and Tailwind CSS.
 
-First, run the development server:
+## Live Demo
+https://smart-bookmark-app-lake-nine.vercel.app
 
-```bash
+## GitHub Repository
+https://github.com/abhi1907/smart-bookmark-app
+
+---
+
+## Tech Stack
+
+- Next.js (App Router)
+- Supabase (Auth, Database, Realtime)
+- Tailwind CSS
+- Vercel (Deployment)
+
+---
+
+## Features
+
+- Google OAuth authentication (no email/password)
+- Add bookmarks (title + URL)
+- Private bookmarks per user (Row Level Security enabled)
+- Realtime updates across multiple tabs
+- Delete bookmarks
+- Secure production deployment
+
+---
+
+## Database Design
+
+Table: `bookmarks`
+
+- id (UUID, primary key)
+- title (text)
+- url (text)
+- user_id (UUID, references auth.users)
+- created_at (timestamp)
+
+### Row Level Security (RLS)
+
+- Users can SELECT only their own bookmarks
+- Users can INSERT only their own bookmarks
+- Users can DELETE only their own bookmarks
+
+---
+
+## Challenges Faced & Solutions
+
+### 1. OAuth Redirect Issue in Production
+
+Initially, Google login redirected to localhost in production.
+Fixed by dynamically setting:
+
+redirectTo: `${window.location.origin}/dashboard`
+
+This ensures correct redirect for both local and deployed environments.
+
+---
+
+### 2. Supabase Realtime Not Triggering
+
+Realtime updates were not working because the `bookmarks` table was not added to the `supabase_realtime` publication.
+
+Solution:
+- Added table under Database → Publications.
+- Configured postgres_changes listener.
+- Added separate DELETE event listener.
+
+---
+
+### 3. Session Handling in Next.js App Router
+
+Used `supabase.auth.getSession()` to properly restore session in client components.
+
+---
+
+## How to Run Locally
+
+1. Clone repository
+2. Add `.env.local` file:
+
+NEXT_PUBLIC_SUPABASE_URL=your_url  
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key  
+
+3. Install dependencies:
+
+npm install
+
+4. Run development server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployed on Vercel with environment variables configured and Supabase Auth URL settings updated.
